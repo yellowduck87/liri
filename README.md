@@ -1,3 +1,3 @@
 # liri
 
-# Like siri but for text recognition
+Like siri but for text recognition
