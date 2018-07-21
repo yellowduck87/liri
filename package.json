@@ -1,0 +1,22 @@
+{
+  "name": "liri",
+  "version": "1.0.0",
+  "description": "language interpreter recognition interface",
+  "main": "index.js",
+  "scripts": {
+    "test": "run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yellowduck87/liri.git"
+  },
+  "keywords": [
+    "liri"
+  ],
+  "author": "Megan Evans",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yellowduck87/liri/issues"
+  },
+  "homepage": "https://github.com/yellowduck87/liri#readme"
+}
