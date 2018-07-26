@@ -55,6 +55,7 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
+node_modules
 .DS_Store
 .env
 

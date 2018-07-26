@@ -20,6 +20,10 @@
   },
   "homepage": "https://github.com/yellowduck87/liri#readme",
   "dependencies": {
-    "inquirer": "^6.0.0"
-  }
+    "dotenv": "^6.0.0",
+    "node-spotify-api": "^1.0.7",
+    "request": "^2.87.0",
+    "twitter": "^1.7.1"
+  },
+  "devDependencies": {}
 }
