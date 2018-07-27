@@ -8,57 +8,56 @@ var request = require("request");
 var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
 var fs = require("fs");
+
 var input = process.argv
-var command = input[3];
+
+var json = [];
 
 if (input.length === 2) {
     console.log("Command not found. Please enter in an accepted command. Choose from the following: \n\n movie-this\n spotify-this-song\n my-tweets\n do-what-it-says\n")
 }
 
+//code that get and loads tweets for Megan Evans---another screen name must be input if one would like to view another user's tweets.
 function loadTweets() {
     var creds = {
         screen_name: "MeganEv35823965",
     }
-    var twitterUrl = "https://api.twitter.com/1.1/search?";
-    client.get('statuses/user_timeline', creds, function (err, tweets, response) {
+    client.get('statuses/user_timeline', creds, function (err, tweets) {
         if (!err) {
             for (var i = 0; i < 20; i++) {
-                // console.log(tweets);
-                if (tweets[i].text === undefined) {
-                    console.log("nothing")
-                } else {
-                    console.log("Tweet:", tweets[i].text);
-                    console.log("Created on:", tweets[i].created_at + "\n")
-                }
+                console.log("Tweet:", tweets[i].text);
+                fs.appendFile("log.txt", ("Tweets: "+tweets[i].text+"\n"), function (err){
+                })
+                console.log("Created on:", tweets[i].created_at + "\n")
+                fs.appendFile("log.txt", ("Created on: "+ tweets[i].created_at + "\n"), function(err){
+                })   
             }
         }
     })
 }
 
-//twitter command code
-if (input[2] === "my-tweets") {
-    loadTweets();
-}
-
 //spotify command code
 var songTitle = input[3];
 
-// search: function({ type: 'artist OR album OR track', query: 'My search query', limit: 20 }, callback);
-if (input[2] === "spotify-this-song") {
-    console.log("spotify command");
-    spotify.search({
-        type: 'track',
-        // songTitle
-        query: "The Sign"
-    }, function (err, data) {
-        if (err) {
-            return console.log('Error occurred: ' + err);
-        }
+function spotifyCommand() {
+    spotify
+        .search({
+            type: 'track',
+            query: songTitle,
+            limit: 10
+        })
+        .then(function (response) {
+            console.log("Artist(s):", response.tracks.items[0].artists[0].name);
+            console.log("Title:", response.tracks.items[0].name);
+            console.log("Preview link:", response.tracks.items[0].preview_url);
+            console.log("Album:", response.tracks.items[0].album.name);
 
-        console.log(data.tracks.items[0]);
-    })
-
+        })
+        .catch(function (err) {
+            console.log('Error occurred: ' + err);
+        })
 }
+
 //code to serach for OMDB movie
 var movieTitle = input[3];
 var queryUrl = "https://www.omdbapi.com/?t=" + movieTitle + "&y=&plot=short&apikey=trilogy";
@@ -80,6 +79,32 @@ function requestMovie() {
         }
     })
 }
+//twitter command code
+if (input[2] === "my-tweets") {
+    loadTweets();
+}
+
+if (input[2] === "spotify-this-song") {
+    if (input.length === 3) {
+        spotify.search({
+                type: 'track',
+                query: "The Sign",
+                limit: 10
+            })
+            .then(function (response) {
+                console.log("Artist(s):", response.tracks.items[5].artists[0].name);
+                console.log("Title:", response.tracks.items[5].name);
+                console.log("Preview link:", response.tracks.items[5].preview_url);
+                console.log("Album:", response.tracks.items[5].album.name);
+
+            })
+            .catch(function (err) {
+                console.log('Error occurred: ' + err);
+            })
+    } else {
+        spotifyCommand();
+    }
+}
 
 //omdb command code
 if (input[2] === "movie-this") {
@@ -100,20 +125,24 @@ if (input[2] === "do-what-it-says") {
         } else {
             var returnArr = data.split(",");
             var returnData = returnArr[1]
+            console.log(returnArr[0])
             if (returnArr[0] === "movie-this") {
                 queryUrl = "https://www.omdbapi.com/?t=" + returnData + "&y=&plot=short&apikey=trilogy";
                 requestMovie();
-
             } else if (returnArr[0] === "spotify-this-song") {
-
+                songTitle = returnData;
+                spotifyCommand();
 
             } else if (returnArr[0] === "my-tweets") {
                 loadTweets();
             } else {
                 console.log("command not recognized")
-
             }
         }
     })
-
 }
+fs.appendFile("log.txt", (input[2] + "," + "'" + input[3] + "'\n"), function (err) {
+    if (err) {
+        console.log(err)
+    }
+})
