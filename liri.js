@@ -9,23 +9,55 @@ var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
 var fs = require("fs");
 var input = process.argv
+var command = input[3];
 
-if (input.length === 2 || (input.length != "do-what-it-says" || "movie-this" || "spotify-this-song" || "my-tweets")){
+if (input.length === 2) {
     console.log("Command not found. Please enter in an accepted command. Choose from the following: \n\n movie-this\n spotify-this-song\n my-tweets\n do-what-it-says\n")
+}
+
+function loadTweets() {
+    var creds = {
+        screen_name: "MeganEv35823965",
+    }
+    var twitterUrl = "https://api.twitter.com/1.1/search?";
+    client.get('statuses/user_timeline', creds, function (err, tweets, response) {
+        if (!err) {
+            for (var i = 0; i < 20; i++) {
+                // console.log(tweets);
+                if (tweets[i].text === undefined) {
+                    console.log("nothing")
+                } else {
+                    console.log("Tweet:", tweets[i].text);
+                    console.log("Created on:", tweets[i].created_at + "\n")
+                }
+            }
+        }
+    })
 }
 
 //twitter command code
 if (input[2] === "my-tweets") {
-    twitter({
-        url: "https://api.twitter.com/1.1/search/tweets.json",
-
-    })
+    loadTweets();
 }
 
 //spotify command code
 var songTitle = input[3];
+
+// search: function({ type: 'artist OR album OR track', query: 'My search query', limit: 20 }, callback);
 if (input[2] === "spotify-this-song") {
-    
+    console.log("spotify command");
+    spotify.search({
+        type: 'track',
+        // songTitle
+        query: "The Sign"
+    }, function (err, data) {
+        if (err) {
+            return console.log('Error occurred: ' + err);
+        }
+
+        console.log(data.tracks.items[0]);
+    })
+
 }
 //code to serach for OMDB movie
 var movieTitle = input[3];
@@ -76,8 +108,7 @@ if (input[2] === "do-what-it-says") {
 
 
             } else if (returnArr[0] === "my-tweets") {
-
-
+                loadTweets();
             } else {
                 console.log("command not recognized")
 
@@ -86,6 +117,3 @@ if (input[2] === "do-what-it-says") {
     })
 
 }
-
-//twitter endpoint: 
-//https://api.twitter.com/1.1/search/tweets.json?q=MeganEv35823965&
